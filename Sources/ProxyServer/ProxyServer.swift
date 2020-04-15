@@ -60,4 +60,8 @@ public class ProxyServer {
 		
 	}
 	
+	func stop(then complete: @escaping (Error?) -> Void) {
+		group.shutdownGracefully(complete)
+	}
+	
 }
