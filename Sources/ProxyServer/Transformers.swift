@@ -2,11 +2,12 @@
 import Foundation
 import NIO
 
-protocol ProxyTransform {
+public protocol ProxyTransform {
 	func transform(data: NIOAny) -> NIOAny
 }
 
-class VoidTransform : ProxyTransform {
-	func transform(data: NIOAny) -> NIOAny { data }
+public class VoidTransform : ProxyTransform {
+	public init() {}
+	public func transform(data: NIOAny) -> NIOAny { data }
 }
 

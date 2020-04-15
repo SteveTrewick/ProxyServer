@@ -22,7 +22,7 @@ public class ProxyServer {
 	let targetTransform: ProxyTransform
 	
 	
-	init(source: HostInfo, target: HostInfo, sourceTransform: ProxyTransform = VoidTransform(), targetTransform: ProxyTransform = VoidTransform(), group: MultiThreadedEventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)) {
+	public init(source: HostInfo, target: HostInfo, sourceTransform: ProxyTransform = VoidTransform(), targetTransform: ProxyTransform = VoidTransform(), group: MultiThreadedEventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)) {
 		self.source          = source
 		self.target          = target
 		self.sourceTransform = sourceTransform
@@ -33,7 +33,7 @@ public class ProxyServer {
 	
 	
 	
-	func start(then complete: @escaping (Result<Void,Error>) -> Void) {
+	public func start(then complete: @escaping (Result<Void,Error>) -> Void) {
 		
 		let bootstrap = ServerBootstrap(group: group)
 			.serverChannelOption(ChannelOptions.backlog, value: 256)
@@ -60,7 +60,7 @@ public class ProxyServer {
 		
 	}
 	
-	func stop(then complete: @escaping (Error?) -> Void) {
+	public func stop(then complete: @escaping (Error?) -> Void) {
 		group.shutdownGracefully(complete)
 	}
 	
