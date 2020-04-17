@@ -72,7 +72,7 @@ class ProxySourceInBound : ChannelInboundHandler {
 		
 		channelsSyncQueue.async {
 			if let channel = self.channels[id] {
-				_ = channel.writeAndFlush(self.sourceTransform.transform(data: data))
+				_ = channel.writeAndFlush(self.sourceTransform.transform(channelId: id, data: data))
 			}
 		}
 	}

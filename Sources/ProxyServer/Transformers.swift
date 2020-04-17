@@ -3,11 +3,11 @@ import Foundation
 import NIO
 
 public protocol ProxyTransform {
-	func transform(data: NIOAny) -> NIOAny
+	func transform(channelId: ObjectIdentifier, data: NIOAny) -> NIOAny
 }
 
 public class VoidTransform : ProxyTransform {
 	public init() {}
-	public func transform(data: NIOAny) -> NIOAny { data }
+	public func transform(channelId: ObjectIdentifier, data: NIOAny) -> NIOAny { data }
 }
 
