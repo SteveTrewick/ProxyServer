@@ -14,16 +14,15 @@ class ProxyTargetInBound : ChannelInboundHandler {
 
 	let group       : MultiThreadedEventLoopGroup
 	let source      : Channel
-	let transformer : ProxyTransform
 	
-	public init(group: MultiThreadedEventLoopGroup, source: Channel, transform: ProxyTransform = VoidTransform()) {
+	
+	public init(group: MultiThreadedEventLoopGroup, source: Channel) {
 		self.group       = group
 		self.source      = source
-		self.transformer = transform
 	}
 	
 	public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
-		_ = source.writeAndFlush(transformer.transform(channelId: ObjectIdentifier(context.channel),data: data))
+		_ = source.writeAndFlush(data)
 	}
 	
 	public func channelInactive(context: ChannelHandlerContext) {
