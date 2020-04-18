@@ -20,6 +20,7 @@ RunLoop.main.run()
 
 ```
 
-You can also provide transformers as params to ```ProxyServer``` which get to peek at and/or alter the data in train. See ```Transformers.swift``` for the protocol.
-
 You probably don't need this. But hey, code is social or something and I need the practice.
+
+You can add extra handlers to the pipelines to read/modify data like this :
+```let proxy  = ProxyServer(source: source, target: target, sourceIntercept: [HexDumpHandler()], targetIntercept: [HexDumpHandler()])```
