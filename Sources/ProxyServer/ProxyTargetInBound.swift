@@ -27,7 +27,8 @@ class ProxyTargetInBound : ChannelInboundHandler {
 	}
 	
 	public func channelInactive(context: ChannelHandlerContext) {
-		_ = source.close()
+		
+		source.close(mode: .all, promise: nil)
 	}
 }
 

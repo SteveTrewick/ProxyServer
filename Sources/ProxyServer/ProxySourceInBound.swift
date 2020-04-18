@@ -86,7 +86,7 @@ class ProxySourceInBound : ChannelInboundHandler {
 		
 		self.channelsSyncQueue.async {
 			if let channel = self.channels[id] {
-				_ = channel.close()
+				channel.close(mode: .all, promise: nil)
 			}
 		}
 	}
