@@ -18,16 +18,18 @@ public class ProxyServer {
 	let source : HostInfo
 	let target : HostInfo
 	
-	let sourceTransform: ProxyTransform
-	let targetTransform: ProxyTransform
 	
 	
-	public init(source: HostInfo, target: HostInfo, sourceTransform: ProxyTransform = VoidTransform(), targetTransform: ProxyTransform = VoidTransform(), group: MultiThreadedEventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)) {
+	let sourceIntercept: [ChannelHandler]
+	let targetIntercept: [ChannelHandler]
+	
+	
+	public init(source: HostInfo, target: HostInfo, sourceIntercept:[ChannelHandler] = [], targetIntercept:[ChannelHandler] = [], group: MultiThreadedEventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)) {
 		self.source          = source
 		self.target          = target
-		self.sourceTransform = sourceTransform
-		self.targetTransform = targetTransform
 		self.group           = group
+		self.sourceIntercept = sourceIntercept
+		self.targetIntercept = targetIntercept
 	}
 	
 	
@@ -39,7 +41,9 @@ public class ProxyServer {
 			.serverChannelOption(ChannelOptions.backlog, value: 256)
 			.serverChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
 			.childChannelInitializer { channel in
-				channel.pipeline.addHandler(ProxySourceInBound(group: self.group, target: self.target, sourceTransform: self.sourceTransform, targetTransform: self.targetTransform))
+				channel.pipeline.addHandlers(self.sourceIntercept).flatMap { _ in
+					channel.pipeline.addHandler(ProxySourceInBound(group: self.group, target: self.target, targetIntercept: self.targetIntercept))
+				}
 			}
 			.childChannelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
 			.childChannelOption(ChannelOptions.maxMessagesPerRead, value: 16)

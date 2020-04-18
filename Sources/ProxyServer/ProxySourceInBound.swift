@@ -16,14 +16,12 @@ class ProxySourceInBound : ChannelInboundHandler {
 	
 	private let channelsSyncQueue = DispatchQueue(label: "channelsQueue")
 	
-	let sourceTransform : ProxyTransform
-	let targetTransform : ProxyTransform
+	let targetIntercept : [ChannelHandler]
 	
-	public init(group: MultiThreadedEventLoopGroup, target: HostInfo, sourceTransform: ProxyTransform = VoidTransform(), targetTransform: ProxyTransform = VoidTransform()) {
+	public init(group: MultiThreadedEventLoopGroup, target: HostInfo, targetIntercept:[ChannelHandler] = []) {
 		self.group           = group
 		self.target          = target
-		self.sourceTransform = sourceTransform
-		self.targetTransform = targetTransform
+		self.targetIntercept = targetIntercept
 	}
 
 
@@ -37,7 +35,9 @@ class ProxySourceInBound : ChannelInboundHandler {
 		let bootstrap = ClientBootstrap(group: self.group)
     	.channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
     	.channelInitializer { channel in
-				channel.pipeline.addHandler( ProxyTargetInBound(group: self.group, source: source, transform: self.targetTransform) )
+				channel.pipeline.addHandlers(self.targetIntercept).flatMap{ _ in
+					channel.pipeline.addHandler( ProxyTargetInBound(group: self.group, source: source) )
+				}
     	}
 
 
@@ -72,7 +72,7 @@ class ProxySourceInBound : ChannelInboundHandler {
 		
 		channelsSyncQueue.async {
 			if let channel = self.channels[id] {
-				_ = channel.writeAndFlush(self.sourceTransform.transform(channelId: id, data: data))
+				_ = channel.writeAndFlush(data)
 			}
 		}
 	}
